@@ -154,6 +154,8 @@
  * dmc_unrar.c from it.
  */
 
+#include "dmc_unrar.h"
+
 #ifndef DMC_UNRAR_HEADER_INCLUDED
 #define DMC_UNRAR_HEADER_INCLUDED
 
@@ -1741,7 +1743,7 @@ static void *dmc_unrar_io_win32_open_func(const char *path) {
 		return NULL;
 
 	/* Allocate that size in the buffer */
-	buf = DMC_UNRAR_MALLOC(buf_size * sizeof(wchar_t));
+	buf = (wchar_t *)DMC_UNRAR_MALLOC(buf_size * sizeof(wchar_t));
 	if (buf == NULL)
 		return NULL;
 #endif
@@ -2038,7 +2040,7 @@ bool dmc_unrar_is_rar_path(const char *path) {
 
 	if (!dmc_unrar_io_init(&io, dmc_unrar_io_default_handler, opaque)) {
 		dmc_unrar_io_default_handler->close(opaque);
-		return DMC_UNRAR_SEEK_FAIL;
+		return false;
 	}
 
 	result = dmc_unrar_is_rar(&io);
@@ -3875,7 +3877,7 @@ static bool dmc_unrar_20_read_comment_file(dmc_unrar_archive *archive, dmc_unrar
 
 	if (block->flags & DMC_UNRAR_FLAG4_ARCHIVE_ENCRYPTVERSION)
 		if (!dmc_unrar_io_seek(&archive->io, 1, DMC_UNRAR_SEEK_CUR))
-			return DMC_UNRAR_SEEK_FAIL;
+			return false;
 
 	return dmc_unrar_20_read_comment_file_at_position(archive, file);
 }
@@ -4314,7 +4316,7 @@ static FILE *dmc_unrar_win32_fopen_write(const char *path) {
 		return NULL;
 
 	/* Allocate that size in the buffer */
-	buf = DMC_UNRAR_MALLOC(buf_size * sizeof(wchar_t));
+	buf = (wchar_t *)DMC_UNRAR_MALLOC(buf_size * sizeof(wchar_t));
 	if (buf == NULL)
 		return NULL;
 #endif /* DMC_UNRAR_DISABLE_MALLOC */
